@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coach Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="onboarding-screen" class="glass-card active">
+    <div class="onboarding-quiz">
+      <div class="quiz-header">
+        <span id="quiz-step-label" class="quiz-step-label">Step 1 of 8</span>
+        <h1 class="onboarding-title">Let’s personalize your Coach</h1>
+        <p class="onboarding-subtitle">
+          Answer a few quick questions so every plan feels built just for you.
+        </p>
+      </div>
+
+      <div class="quiz-steps">
+        <div class="quiz-step active" data-step="1">
+          <h2 class="quiz-question">What should we call you?</h2>
+          <input type="text" id="quiz-name" class="quiz-input" placeholder="Enter your name" />
+          <button type="button" class="quiz-button quiz-next" data-next-step="2" data-step="1">
+            Next
+          </button>
+        </div>
+
+        <div class="quiz-step" data-step="2">
+          <button type="button" class="back-btn" data-back-step="1">← Back</button>
+          <h2 class="quiz-question">How old are you?</h2>
+          <input type="number" id="quiz-age" class="quiz-input" placeholder="Age in years" min="10" max="80" />
+          <button type="button" class="quiz-button quiz-next" data-next-step="3" data-step="2">
+            Next
+          </button>
+        </div>
+
+        <div class="quiz-step" data-step="3">
+          <button type="button" class="back-btn" data-back-step="2">← Back</button>
+          <h2 class="quiz-question">What are your current stats?</h2>
+          <div class="unit-row">
+            <span class="unit-label">Height</span>
+            <div class="unit-toggle" id="height-unit-toggle">
+              <button type="button" class="unit-option active" data-unit="cm">cm</button>
+              <button type="button" class="unit-option" data-unit="ftin">ft &amp; in</button>
+            </div>
+          </div>
+          <div class="quiz-inline-inputs" id="height-cm-group">
+            <input type="number" id="quiz-height" class="quiz-input" placeholder="Height (cm)" min="100" max="250" />
+          </div>
+          <div class="quiz-inline-inputs hidden" id="height-ftin-group">
+            <input type="number" id="quiz-height-ft" class="quiz-input" placeholder="ft" min="3" max="8" />
+            <input type="number" id="quiz-height-in" class="quiz-input" placeholder="in" min="0" max="11" />
+          </div>
+
+          <div class="unit-row">
+            <span class="unit-label">Weight</span>
+            <div class="unit-toggle" id="weight-unit-toggle">
+              <button type="button" class="unit-option active" data-unit="kg">kg</button>
+              <button type="button" class="unit-option" data-unit="lbs">lbs</button>
+            </div>
+          </div>
+          <div class="quiz-inline-inputs">
+            <input type="number" id="quiz-weight" class="quiz-input" placeholder="Weight" min="30" max="200" />
+          </div>
+          <button type="button" class="quiz-button quiz-next" data-next-step="4" data-step="3">
+            Next
+          </button>
+        </div>
+
+        <div class="quiz-step" data-step="4">
+          <button type="button" class="back-btn" data-back-step="3">← Back</button>
+          <h2 class="quiz-question">What is your primary physical goal?</h2>
+          <div class="quiz-options" data-field="primaryGoal">
+            <button type="button" class="quiz-option" data-value="Lose Weight" data-step="4">
+              Lose Weight
+            </button>
+            <button type="button" class="quiz-option" data-value="Build Muscle" data-step="4">
+              Build Muscle
+            </button>
+            <button type="button" class="quiz-option" data-value="Increase Height" data-step="4">
+              Increase Height
+            </button>
+            <button type="button" class="quiz-option" data-value="Overall Health" data-step="4">
+              Overall Health
+            </button>
+          </div>
+        </div>
+
+        <div class="quiz-step" data-step="5">
+          <button type="button" class="back-btn" data-back-step="4">← Back</button>
+          <h2 class="quiz-question" id="quiz-target-label">
+            What is your specific target?
+          </h2>
+          <div id="step-5-number-input">
+            <div class="unit-row">
+              <span class="unit-label">Target</span>
+              <div class="unit-toggle" id="target-unit-toggle">
+                <button type="button" class="unit-option active" data-unit="kgcm">
+                  kg/cm
+                </button>
+                <button type="button" class="unit-option" data-unit="imperial">
+                  lbs / ft &amp; in
+                </button>
+              </div>
+            </div>
+            <input type="number" id="quiz-target" class="quiz-input" placeholder="Enter your target" />
+          </div>
+
+          <div id="step-5-cards" class="quiz-options hidden">
+            <button type="button" class="quiz-option" data-step="5" data-target-card="Lean & Athletic">
+              Lean &amp; Athletic
+            </button>
+            <button type="button" class="quiz-option" data-step="5" data-target-card="Moderate Muscle">
+              Moderate Muscle
+            </button>
+            <button type="button" class="quiz-option" data-step="5" data-target-card="Bulky & Massive">
+              Bulky &amp; Massive
+            </button>
+            <button type="button" class="quiz-option" data-step="5" data-target-card="Shredded">
+              Shredded
+            </button>
+          </div>
+          <button type="button" class="quiz-button quiz-next" data-next-step="6" data-step="5">
+            Next
+          </button>
+        </div>
+
+        <div class="quiz-step" data-step="6">
+          <button type="button" class="back-btn" data-back-step="5">← Back</button>
+          <h2 class="quiz-question">What is your main aesthetic focus?</h2>
+          <div class="quiz-options" data-field="aestheticFocus">
+            <button type="button" class="quiz-option" data-value="Skincare" data-step="6">
+              Skincare
+            </button>
+            <button type="button" class="quiz-option" data-value="Jawline/Mewing" data-step="6">
+              Jawline / Mewing
+            </button>
+            <button type="button" class="quiz-option" data-value="Hair Growth" data-step="6">
+              Hair Growth
+            </button>
+            <button type="button" class="quiz-option" data-value="Overall" data-step="6">
+              Overall
+            </button>
+          </div>
+        </div>
+
+        <div class="quiz-step" data-step="7">
+          <button type="button" class="back-btn" data-back-step="6">← Back</button>
+          <h2 class="quiz-question">What is your current fitness level?</h2>
+          <div class="quiz-options" data-field="fitnessLevel">
+            <button type="button" class="quiz-option" data-value="Beginner" data-step="7">
+              Beginner
+            </button>
+            <button type="button" class="quiz-option" data-value="Intermediate" data-step="7">
+              Intermediate
+            </button>
+            <button type="button" class="quiz-option" data-value="Advanced" data-step="7">
+              Advanced
+            </button>
+          </div>
+        </div>
+
+        <div class="quiz-step" data-step="8">
+          <button type="button" class="back-btn" data-back-step="7">← Back</button>
+          <h2 class="quiz-question">What is your main Hobby/Career Grind?</h2>
+          <input type="text" id="quiz-hobby" class="quiz-input" placeholder="e.g., YouTube 200 subs, coding projects" />
+          <button type="button" id="quiz-finish" class="quiz-button" data-step="8">
+            Finish
+          </button>
+        </div>
+      </div>
+
+      <div id="quiz-loading" class="quiz-loading hidden">
+        <div class="quiz-spinner"></div>
+        <p class="quiz-loading-text">
+          Analyzing your profile and building your 6-week plan...
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <section id="view-home" class="view" style="display: none;">
+      <header class="app-header">
+        <h1>Daily Discipline</h1>
+        <button class="icon-button" type="button" aria-label="Home info">
+          <span class="icon-placeholder">i</span>
+        </button>
+      </header>
+
+      <main class="app-main">
+        <section class="home-header">
+          <p class="home-date">THURSDAY, MAR 12</p>
+          <h1 class="user-greeting">
+            Good Morning,
+            <span class="user-name-display"></span>
+          </h1>
+        </section>
+
+        <div class="glass-card rings-container">
+          <section class="home-progress">
+            <div class="progress-ring progress-ring--charisma">
+              <div class="progress-ring-svg-wrapper">
+                <svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="grad-charisma" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#FF007F" />
+                      <stop offset="100%" stop-color="#FFB347" />
+                    </linearGradient>
+                    <filter id="glow-charisma" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <circle class="ring-track progress-ring__track" cx="50" cy="50" r="40"></circle>
+                  <circle class="ring-progress progress-ring__circle" id="ring-charisma-circle" cx="50" cy="50" r="40"
+                    stroke="url(#grad-charisma)" filter="url(#glow-charisma)"></circle>
+                </svg>
+                <span class="ring-percent" id="charisma-percent">30%</span>
+              </div>
+              <span class="progress-label">Charisma</span>
+            </div>
+
+            <div class="progress-ring progress-ring--looks">
+              <div class="progress-ring-svg-wrapper">
+                <svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="grad-looks" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#00F0FF" />
+                      <stop offset="100%" stop-color="#3B82F6" />
+                    </linearGradient>
+                    <filter id="glow-looks" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <circle class="ring-track progress-ring__track" cx="50" cy="50" r="40"></circle>
+                  <circle class="ring-progress progress-ring__circle" id="ring-looks-circle" cx="50" cy="50" r="40"
+                    stroke="url(#grad-looks)" filter="url(#glow-looks)"></circle>
+                </svg>
+                <span class="ring-percent" id="looks-percent">50%</span>
+              </div>
+              <span class="progress-label">Looks</span>
+            </div>
+
+            <div class="progress-ring progress-ring--discipline">
+              <div class="progress-ring-svg-wrapper">
+                <svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="grad-discipline" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#00FF00" />
+                      <stop offset="100%" stop-color="#22C55E" />
+                    </linearGradient>
+                    <filter id="glow-discipline" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <circle class="ring-track progress-ring__track" cx="50" cy="50" r="40"></circle>
+                  <circle class="ring-progress progress-ring__circle" id="ring-discipline-circle" cx="50" cy="50" r="40"
+                    stroke="url(#grad-discipline)" filter="url(#glow-discipline)"></circle>
+                </svg>
+                <span class="ring-percent" id="discipline-percent">70%</span>
+              </div>
+              <span class="progress-label">Discipline</span>
+            </div>
+          </section>
+        </div>
+
+        <div class="glass-card planner-card">
+          <section class="planner">
+            <h2 class="planner-title">Today's Plan</h2>
+            <div id="dynamic-task-list">
+              <!-- Tasks injected here dynamically -->
+            </div>
+          </section>
+        </div>
+      </main>
+    </section>
+
+    <section id="view-coach" class="view">
+      <header class="app-header">
+        <h1>Coach</h1>
+        <button class="icon-button" type="button" aria-label="Coach info">
+          <span class="icon-placeholder">i</span>
+        </button>
+      </header>
+
+      <main class="app-main">
+        <div class="chat-container glass-card">
+          <div id="chat-history" aria-label="Coach chat history">
+            <div class="chat-message chat-message-ai">
+              <div class="chat-bubble">
+                <p class="welcome-text">Hello <span class="user-name-display"></span>! I am your 24/7 Confidence Coach.
+                  How can I help you level up today?</p>
+              </div>
+              <span class="chat-meta">Coach</span>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <input id="chat-input" type="text" placeholder="Ask your Coach anything..." autocomplete="off" />
+            <button id="chat-send" type="button">
+              <span class="chat-send-label">Send</span>
+            </button>
+          </div>
+        </div>
+      </main>
+    </section>
+
+    <section id="view-profile" class="view" style="display: none;">
+      <header class="app-header">
+        <h1>Profile</h1>
+      </header>
+
+      <main class="app-main">
+        <div class="profile-header-section">
+          <div class="profile-avatar">
+            <span id="profile-avatar-initial">U</span>
+            <div class="badge">Week 1</div>
+          </div>
+          <h2 id="profile-name-display" class="profile-display-name">User Name</h2>
+        </div>
+
+        <div class="profile-stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" id="profile-confidence">55%</span>
+            <span class="stat-label">Confidence</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="profile-tasks">0</span>
+            <span class="stat-label">Tasks</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="profile-streak">0d</span>
+            <span class="stat-label">Streak</span>
+          </div>
+        </div>
+
+        <div class="profile-menu">
+          <div class="settings-group">
+            <h3 class="settings-group-title">SOCIAL</h3>
+            <div class="settings-card">
+              <div class="settings-item">
+                <span class="settings-text">Friends</span>
+                <span class="chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3 class="settings-group-title">ACCOUNT</h3>
+            <div class="settings-card">
+              <div class="settings-item">
+                <span class="settings-text">Personal Information</span>
+                <span class="chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3 class="settings-group-title">PREFERENCES</h3>
+            <div class="settings-card">
+              <div class="settings-item">
+                <span class="settings-text">Focus Areas</span>
+                <span class="chevron">›</span>
+              </div>
+              <div class="settings-item">
+                <span class="settings-text">Advanced Schedule</span>
+                <span class="chevron">›</span>
+              </div>
+              <div class="settings-item">
+                <span class="settings-text">Weight & Units</span>
+                <span class="chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3 class="settings-group-title">SAFETY</h3>
+            <div class="settings-card">
+              <div class="settings-item">
+                <span class="settings-text">Privacy Policy</span>
+                <span class="chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3 class="settings-group-title">SUPPORT</h3>
+            <div class="settings-card">
+              <div class="settings-item">
+                <span class="settings-text">Help Center</span>
+                <span class="chevron">›</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-actions-group">
+            <button type="button" class="btn-danger settings-action-btn">Sign Out</button>
+            <button type="button" class="btn-danger settings-action-btn">Delete Account</button>
+          </div>
+        </div>
+      </main>
+    </section>
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <button class="bottom-nav-item" type="button" data-view="home" id="nav-home">
+        <span class="bottom-nav-label">Home</span>
+      </button>
+      <button class="bottom-nav-item" type="button" data-view="workout" id="nav-workout">
+        <span class="bottom-nav-label">Workout</span>
+      </button>
+      <button class="bottom-nav-item active" type="button" data-view="coach" id="nav-coach" aria-current="page">
+        <span class="bottom-nav-label">Coach</span>
+      </button>
+      <button class="bottom-nav-item" type="button" data-view="profile" id="nav-profile">
+        <span class="bottom-nav-label">Profile</span>
+      </button>
+    </nav>
+
+    <button class="fab" type="button" aria-label="Primary action">
+      <span class="fab-icon">+</span>
+    </button>
+  </div>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
