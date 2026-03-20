@@ -1,5 +1,5 @@
 const API_KEY = CONFIG.GEMINI_API_KEY;
-
+const playerSystem = new RPGEngine();
 document.addEventListener("DOMContentLoaded", () => {
   const viewHome = document.getElementById("view-home");
   const viewCoach = document.getElementById("view-coach");
@@ -80,53 +80,53 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  function applyTaskState(label, checked) {
-    const checkbox = label.querySelector(".task-checkbox");
-    const custom = label.querySelector(".task-custom-checkbox");
-    const text = label.querySelector(".task-text");
+  function handleTaskToggle(event) {
+    const checkbox = event.target;
+    const statCategory = checkbox.dataset.stat;
+    const xpAmount = parseInt(checkbox.dataset.xp || 0, 10);
+    const taskLabel = checkbox.closest('.task-label') || checkbox.closest('label');
+    const labelText = taskLabel ? taskLabel.querySelector('.task-text') : null;
 
-    if (!checkbox || !custom || !text) return;
-
-    checkbox.checked = checked;
-
-    if (checked) {
-      custom.classList.add("checked");
-      text.classList.add("task-completed");
+    if (checkbox.checked) {
+      if (statCategory && xpAmount) {
+        playerSystem.gainXP(xpAmount, statCategory);
+      }
+      if (labelText) {
+        labelText.classList.add('task-completed');
+      } else if (taskLabel) {
+        taskLabel.classList.add('task-completed');
+      }
     } else {
-      custom.classList.remove("checked");
-      text.classList.remove("task-completed");
+      if (statCategory && xpAmount) {
+        playerSystem.loseXP(xpAmount, statCategory);
+      }
+      if (labelText) {
+        labelText.classList.remove('task-completed');
+      } else if (taskLabel) {
+        taskLabel.classList.remove('task-completed');
+      }
     }
+    checkDailyStreak();
   }
 
-  function initTasks() {
-    const taskLabels = document.querySelectorAll(".task-item .task-label");
+  function checkDailyStreak() {
+    const allCheckboxes = document.querySelectorAll('.task-checkbox');
+    const checkedBoxes = document.querySelectorAll('.task-checkbox:checked');
+    const total = allCheckboxes.length;
+    const checked = checkedBoxes.length;
 
-    taskLabels.forEach((label) => {
-      const textEl = label.querySelector(".task-text");
-      if (!textEl) return;
-
-      const rawText = textEl.textContent.trim();
-      const taskId = toTaskId(rawText);
-
-      const stored = localStorage.getItem(taskId);
-      const isChecked = stored === "true";
-      applyTaskState(label, isChecked);
-
-      label.addEventListener("click", (event) => {
-        // Avoid toggling twice if browser toggles checkbox
-        event.preventDefault();
-
-        const checkbox = label.querySelector(".task-checkbox");
-        if (!checkbox) return;
-
-        const nextChecked = !checkbox.checked;
-        applyTaskState(label, nextChecked);
-        localStorage.setItem(taskId, String(nextChecked));
-      });
-    });
+    if (total > 0 && checked === total) {
+      playerSystem.setDailyCompletion(true);
+    } else {
+      playerSystem.setDailyCompletion(false);
+    }
+    updateDashboardUI();
   }
 
-  initTasks();
+  const taskCheckboxes = document.querySelectorAll(".task-checkbox");
+  taskCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener("change", handleTaskToggle);
+  });
 
   // Chat UI bindings
   const chatInput = document.getElementById("chat-input");
@@ -382,67 +382,64 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateHomeDashboard() {
     updateDateAndGreeting();
 
-    const tasksRaw = localStorage.getItem("dailyTasks");
-    let tasks = [];
-    if (tasksRaw) {
-      try {
-        tasks = JSON.parse(tasksRaw);
-      } catch (e) {
-        tasks = [];
+    updateDashboardUI();
+  }
+
+  function updateDashboardUI() {
+    const state = playerSystem.state;
+
+    const streakEl = document.getElementById("rpg-streak-count");
+    if (streakEl) streakEl.textContent = state.streak || 0;
+
+    const levelEl = document.getElementById("rpg-current-level");
+    if (levelEl) levelEl.textContent = state.level || 1;
+
+    const currentXpEl = document.getElementById("rpg-current-xp");
+    const nextXpEl = document.getElementById("rpg-next-xp");
+    const levelRing = document.getElementById("rpg-level-ring");
+
+    const xpForCurrent = playerSystem.getXPForCurrentLevel();
+    const xpForNext = playerSystem.getXPForNextLevel();
+
+    const xpIntoLevel = Math.max(0, (state.totalXP || 0) - xpForCurrent);
+    const xpNeededForLevel = Math.max(1, xpForNext - xpForCurrent);
+
+    if (currentXpEl) currentXpEl.textContent = xpIntoLevel;
+    if (nextXpEl) nextXpEl.textContent = xpNeededForLevel;
+
+    if (levelRing) {
+      const circumference = 314.159;
+      const percent = Math.min(xpIntoLevel / xpNeededForLevel, 1);
+      levelRing.style.strokeDashoffset = circumference - (percent * circumference);
+    }
+
+    const c = state.stats?.charisma || 0;
+    const l = state.stats?.looks || 0;
+    const d = state.stats?.discipline || 0;
+    const maxStat = Math.max(10, c, l, d);
+
+    const updateStat = (id, value) => {
+      const valEl = document.getElementById(`rpg-stat-${id}-val`);
+      const fillEl = document.getElementById(`rpg-stat-${id}-fill`);
+      if (valEl) valEl.textContent = value;
+      if (fillEl) {
+        const pct = (value / maxStat) * 100;
+        fillEl.style.width = `${pct}%`;
       }
-    }
+    };
 
-    if (!tasks || tasks.length === 0) {
-      tasks = ["100 pushups", "Drink water", "Read an article"];
-    }
+    updateStat('charisma', c);
+    updateStat('looks', l);
+    updateStat('discipline', d);
+  }
 
-    const container = document.getElementById("dynamic-task-list");
-    if (container) {
-      container.innerHTML = "";
-      tasks.forEach(taskText => {
-        const div = document.createElement("div");
-        div.className = "task-item";
-        div.innerHTML = `
-          <label class="task-label">
-            <input type="checkbox" class="task-checkbox">
-            <span class="task-custom-checkbox"></span>
-            <span class="task-text">${taskText}</span>
-          </label>
-        `;
-        container.appendChild(div);
-      });
-      initTasks();
-    }
-
-    const fitness = userData.fitnessLevel || "Beginner";
-    let basePercent = 10;
-    if (fitness === "Intermediate") basePercent = 35;
-    else if (fitness === "Advanced") basePercent = 60;
-
-    const charismaRing = document.getElementById("charisma-percent");
-    const looksRing = document.getElementById("looks-percent");
-    const disciplineRing = document.getElementById("discipline-percent");
-
-    const looksPercent = Math.min(basePercent + 10, 100);
-    const disciplinePercent = Math.min(basePercent + 20, 100);
-
-    if (charismaRing) charismaRing.textContent = `${basePercent}%`;
-    if (looksRing) looksRing.textContent = `${looksPercent}%`;
-    if (disciplineRing) disciplineRing.textContent = `${disciplinePercent}%`;
-
-    const charismaCircle = document.getElementById("ring-charisma-circle");
-    const looksCircle = document.getElementById("ring-looks-circle");
-    const disciplineCircle = document.getElementById("ring-discipline-circle");
-
-    if (charismaCircle) {
-      charismaCircle.style.strokeDashoffset = 251.2 - (251.2 * (basePercent / 100));
-    }
-    if (looksCircle) {
-      looksCircle.style.strokeDashoffset = 251.2 - (251.2 * (looksPercent / 100));
-    }
-    if (disciplineCircle) {
-      disciplineCircle.style.strokeDashoffset = 251.2 - (251.2 * (disciplinePercent / 100));
-    }
+  const testBtn = document.getElementById("rpg-test-btn");
+  if (testBtn) {
+    testBtn.addEventListener("click", () => {
+      const result = playerSystem.gainXP(50, 'discipline');
+      console.log("XP Gained:", result);
+      updateDashboardUI();
+    });
   }
 
   function updateProfileView() {
@@ -665,9 +662,19 @@ document.addEventListener("DOMContentLoaded", () => {
     appendMessage("user", text);
     chatInput.value = "";
 
-    const reply = await fetchGeminiResponse(text);
-    if (reply) {
-      appendMessage("ai", reply);
+    // Show loading state
+    appendMessage("ai", "Coach is typing...");
+    const typingIndicator = chatHistory.lastElementChild;
+
+    const responseText = await fetchGeminiResponse(text);
+
+    // Remove typing indicator
+    if (typingIndicator && typingIndicator.parentNode === chatHistory) {
+      chatHistory.removeChild(typingIndicator);
+    }
+
+    if (responseText) {
+      appendMessage("ai", responseText);
     }
   }
 
@@ -686,11 +693,111 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Edit Tasks Toggle
+  const editTasksBtn = document.getElementById("edit-tasks-btn");
+  const taskListContainer = document.getElementById("dynamic-task-list");
+
+  if (editTasksBtn && taskListContainer) {
+    editTasksBtn.addEventListener("click", () => {
+      const isEditMode = taskListContainer.classList.toggle("edit-mode");
+      editTasksBtn.textContent = isEditMode ? "Done" : "Edit";
+    });
+  }
+
+  // Add Custom Task inside Edit Mode
+  const addCustomTaskBtn = document.getElementById("add-custom-task-btn");
+  if (addCustomTaskBtn) {
+    addCustomTaskBtn.addEventListener("click", () => {
+      const newTask = prompt("Add a new task/action:");
+      if (newTask !== null && newTask.trim() !== "") {
+        if (taskListContainer) {
+          const wrapper = document.createElement("div");
+          wrapper.className = "task-item";
+          wrapper.setAttribute("data-type", "custom");
+          wrapper.innerHTML = `
+            <label class="task-label" style="flex: 1;">
+              <input type="checkbox" class="task-checkbox" data-stat="discipline" data-xp="20">
+              <span class="task-custom-checkbox"></span>
+              <span class="task-text">${newTask}</span>
+            </label>
+            <div class="task-edit-actions">
+              <button type="button" class="btn-icon edit" title="Edit text">✏️</button>
+              <button type="button" class="btn-icon delete" title="Delete task">🗑️</button>
+            </div>
+          `;
+          taskListContainer.appendChild(wrapper);
+
+          const newCheckbox = wrapper.querySelector(".task-checkbox");
+          if (newCheckbox) {
+            newCheckbox.addEventListener("change", handleTaskToggle);
+          }
+
+          const editBtn = wrapper.querySelector(".edit");
+          const deleteBtn = wrapper.querySelector(".delete");
+          const taskTextSpan = wrapper.querySelector(".task-text");
+
+          if (deleteBtn) {
+            deleteBtn.addEventListener("click", () => {
+              if (newCheckbox.checked) {
+                newCheckbox.checked = false;
+                handleTaskToggle({ target: newCheckbox });
+              }
+              wrapper.remove();
+              checkDailyStreak();
+            });
+          }
+          if (editBtn) {
+            editBtn.addEventListener("click", () => {
+              const updated = prompt("Update task:", taskTextSpan.textContent);
+              if (updated !== null && updated.trim() !== "") {
+                taskTextSpan.textContent = updated;
+              }
+            });
+          }
+          checkDailyStreak();
+        }
+      }
+    });
+  }
+
   // FAB / floating plus button
   const fab = document.querySelector(".fab");
   if (fab) {
     fab.addEventListener("click", () => {
-      alert("AI Camera Tracking coming in Phase 5! 📸💪");
+      alert("⚡ AI Camera Tracking Booting Up... (Coming in Phase 6)");
     });
   }
+
+  // Register PWA service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(registration => {
+        console.log('Service Worker registered with scope:', registration.scope);
+      })
+      .catch(error => {
+        console.error('Service Worker registration failed:', error);
+      });
+  }
+});
+let deferredPrompt;
+const installBtn = document.getElementById('installAppBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome from auto-showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+  // Un-hide our custom button!
+  installBtn.style.display = 'block';
+
+  installBtn.addEventListener('click', () => {
+    // Hide the button
+    installBtn.style.display = 'none';
+    // Show the native browser install prompt
+    deferredPrompt.prompt();
+    // Wait for user to click Install
+    deferredPrompt.userChoice.then((choiceResult) => {
+      deferredPrompt = null;
+    });
+  });
 });

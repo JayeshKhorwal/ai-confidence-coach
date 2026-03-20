@@ -4,8 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B0E14">
   <title>Coach Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" href="icon-192.png">
 </head>
 
 <body>
@@ -67,6 +71,11 @@
           </div>
           <button type="button" class="quiz-button quiz-next" data-next-step="4" data-step="3">
             Next
+          </button>
+
+          <button id="installAppBtn"
+            style="display:none; background-color:#00E5FF; color:#0B0E14; padding:10px 20px; border-radius:8px; border:none; font-weight:bold; cursor:pointer; margin-top:15px;">
+            Download Coach App
           </button>
         </div>
 
@@ -200,91 +209,104 @@
           </h1>
         </section>
 
-        <div class="glass-card rings-container">
-          <section class="home-progress">
-            <div class="progress-ring progress-ring--charisma">
-              <div class="progress-ring-svg-wrapper">
-                <svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">
-                  <defs>
-                    <linearGradient id="grad-charisma" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#FF007F" />
-                      <stop offset="100%" stop-color="#FFB347" />
-                    </linearGradient>
-                    <filter id="glow-charisma" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
-                      <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                  </defs>
-                  <circle class="ring-track progress-ring__track" cx="50" cy="50" r="40"></circle>
-                  <circle class="ring-progress progress-ring__circle" id="ring-charisma-circle" cx="50" cy="50" r="40"
-                    stroke="url(#grad-charisma)" filter="url(#glow-charisma)"></circle>
-                </svg>
-                <span class="ring-percent" id="charisma-percent">30%</span>
-              </div>
-              <span class="progress-label">Charisma</span>
-            </div>
+        <div class="rpg-dashboard">
+          <div class="rpg-streak-card glass-card">
+            <span class="rpg-streak-emoji">⚡</span>
+            <span class="rpg-streak-text">Current Streak: <span id="rpg-streak-count">0</span> Days</span>
+          </div>
 
-            <div class="progress-ring progress-ring--looks">
-              <div class="progress-ring-svg-wrapper">
-                <svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">
-                  <defs>
-                    <linearGradient id="grad-looks" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#00F0FF" />
-                      <stop offset="100%" stop-color="#3B82F6" />
-                    </linearGradient>
-                    <filter id="glow-looks" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
-                      <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                  </defs>
-                  <circle class="ring-track progress-ring__track" cx="50" cy="50" r="40"></circle>
-                  <circle class="ring-progress progress-ring__circle" id="ring-looks-circle" cx="50" cy="50" r="40"
-                    stroke="url(#grad-looks)" filter="url(#glow-looks)"></circle>
-                </svg>
-                <span class="ring-percent" id="looks-percent">50%</span>
+          <div class="rpg-level-card glass-card">
+            <div class="progress-ring-svg-wrapper large-ring">
+              <svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                  <linearGradient id="grad-level" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00E5FF" />
+                    <stop offset="100%" stop-color="#00E676" />
+                  </linearGradient>
+                  <filter id="glow-level" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+                <circle class="ring-track progress-ring__track" cx="60" cy="60" r="50"></circle>
+                <circle class="ring-progress progress-ring__circle" id="rpg-level-ring" cx="60" cy="60" r="50"
+                  stroke="url(#grad-level)" filter="url(#glow-level)"></circle>
+              </svg>
+              <div class="rpg-level-info">
+                <span class="rpg-level-label">LVL</span>
+                <span id="rpg-current-level" class="rpg-level-value">1</span>
               </div>
-              <span class="progress-label">Looks</span>
             </div>
+            <div class="rpg-xp-text">
+              <span id="rpg-current-xp">0</span> / <span id="rpg-next-xp">100</span> XP
+            </div>
+          </div>
 
-            <div class="progress-ring progress-ring--discipline">
-              <div class="progress-ring-svg-wrapper">
-                <svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">
-                  <defs>
-                    <linearGradient id="grad-discipline" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#00FF00" />
-                      <stop offset="100%" stop-color="#22C55E" />
-                    </linearGradient>
-                    <filter id="glow-discipline" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
-                      <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                  </defs>
-                  <circle class="ring-track progress-ring__track" cx="50" cy="50" r="40"></circle>
-                  <circle class="ring-progress progress-ring__circle" id="ring-discipline-circle" cx="50" cy="50" r="40"
-                    stroke="url(#grad-discipline)" filter="url(#glow-discipline)"></circle>
-                </svg>
-                <span class="ring-percent" id="discipline-percent">70%</span>
+          <div class="rpg-stats-grid">
+            <div class="rpg-stat-card glass-card">
+              <div class="rpg-stat-header">
+                <span>Charisma</span>
+                <span id="rpg-stat-charisma-val">0</span>
               </div>
-              <span class="progress-label">Discipline</span>
+              <div class="rpg-stat-bar">
+                <div class="rpg-stat-fill" id="rpg-stat-charisma-fill"></div>
+              </div>
             </div>
-          </section>
+            <div class="rpg-stat-card glass-card">
+              <div class="rpg-stat-header">
+                <span>Looks</span>
+                <span id="rpg-stat-looks-val">0</span>
+              </div>
+              <div class="rpg-stat-bar">
+                <div class="rpg-stat-fill" id="rpg-stat-looks-fill"></div>
+              </div>
+            </div>
+            <div class="rpg-stat-card glass-card">
+              <div class="rpg-stat-header">
+                <span>Discipline</span>
+                <span id="rpg-stat-discipline-val">0</span>
+              </div>
+              <div class="rpg-stat-bar">
+                <div class="rpg-stat-fill" id="rpg-stat-discipline-fill"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="glass-card planner-card">
           <section class="planner">
-            <h2 class="planner-title">Today's Plan</h2>
+            <h2 class="planner-title" style="display: flex; justify-content: space-between; align-items: center;">
+              Today's Plan
+              <span id="edit-tasks-btn" style="color: #00E5FF; font-size: 14px; cursor: pointer;">Edit</span>
+            </h2>
             <div id="dynamic-task-list">
-              <!-- Tasks injected here dynamically -->
+              <div class="task-item" data-type="system">
+                <label class="task-label">
+                  <input type="checkbox" class="task-checkbox" data-stat="discipline" data-xp="25">
+                  <span class="task-custom-checkbox"></span>
+                  <span class="task-text">Do daily spine lengthening stretches</span>
+                </label>
+              </div>
+              <div class="task-item" data-type="system">
+                <label class="task-label">
+                  <input type="checkbox" class="task-checkbox" data-stat="looks" data-xp="25">
+                  <span class="task-custom-checkbox"></span>
+                  <span class="task-text">Cleanse, tone, moisturize your face</span>
+                </label>
+              </div>
+              <div class="task-item" data-type="system">
+                <label class="task-label">
+                  <input type="checkbox" class="task-checkbox" data-stat="charisma" data-xp="30">
+                  <span class="task-custom-checkbox"></span>
+                  <span class="task-text">Research one potential career path</span>
+                </label>
+              </div>
             </div>
+            <button id="add-custom-task-btn" class="rpg-test-btn"
+              style="width: 100%; display: none; margin-top: 10px;">+ Add Custom Task</button>
           </section>
         </div>
       </main>
@@ -417,13 +439,13 @@
     </section>
 
     <nav class="bottom-nav" aria-label="Primary">
-      <button class="bottom-nav-item" type="button" data-view="home" id="nav-home">
+      <button class="bottom-nav-item active" type="button" data-view="home" id="nav-home" aria-current="page">
         <span class="bottom-nav-label">Home</span>
       </button>
       <button class="bottom-nav-item" type="button" data-view="workout" id="nav-workout">
         <span class="bottom-nav-label">Workout</span>
       </button>
-      <button class="bottom-nav-item active" type="button" data-view="coach" id="nav-coach" aria-current="page">
+      <button class="bottom-nav-item" type="button" data-view="coach" id="nav-coach">
         <span class="bottom-nav-label">Coach</span>
       </button>
       <button class="bottom-nav-item" type="button" data-view="profile" id="nav-profile">
@@ -436,6 +458,7 @@
     </button>
   </div>
   <script src="config.js"></script>
+  <script src="rpg-engine.js"></script>
   <script src="app.js"></script>
 </body>
 
